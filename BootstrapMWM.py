@@ -13,7 +13,7 @@ import copy
 from scipy import stats
 from sklearn.cluster import AgglomerativeClustering
 from sklearn.utils import resample
-from arch.bootstrap import CircularBlockBootstrap
+from arch.bootstrap import IIDBootstrap,MovingBlockBootstrap,CircularBlockBootstrap
 import math
 import csv
 
@@ -75,34 +75,12 @@ def smote(y,m):
         print(names['tem' + str(i)])
 
     if len(y) < 10:
-        d = names['tem' + str(1)][0] -names['tem' + str(0)][-1]
         for i in range(m-1):
             names['tem' + str(i)] = inter(names['tem' + str(i)],2)
         names['tem' + str(m-1)] = inter(names['tem' + str(m-1)],2)
-        names['tem' + str(m-1)].append((names['tem' + str(0)][-1] + names['tem' + str(1)][0])/2)
     for i in range(1,m):
         names['tem' + str(0)].extend(names['tem' + str(i)])
     names['tem' + str(0)].sort()
-
-    ########散点图
-    num = 0
-    for i in names['tem' + str(0)]:
-        if testcop.count(i) != 0:
-            plt.scatter(num,i,color='r')
-        else:
-            plt.scatter(num,i,color='b')
-        num = num+1
-    plt.xlabel("Serial number of samples")
-    plt.ylabel("Nominal tensile strength")
-    i = 0
-    while True:
-        i += 1
-        newname = '{}{:d}.png'.format('/data/Serial', i)
-        if os.path.exists(newname):
-            continue
-        plt.savefig(newname,dpi=1000)
-        break
-    plt.show()
 
     return names['tem' + str(0)] ,length
 
@@ -110,7 +88,7 @@ def CircularBlockBootstrap(y,length):
     alldata = []
     rs = np.random.RandomState(1234)
     y = np.array(y)
-    bs = CircularBlockBootstrap(length,y)
+    bs = CircularBlockBootstrap(length,y,rs)
     for data in bs.bootstrap(20):
         data[0][0].sort()
         alldata.append(data[0][0])
@@ -149,7 +127,7 @@ def NT(input,g,step,LL,y,alpha,depth):
 
     for i in range(step):
         print("梯度 ：",np.linalg.norm(G,1))
-        if np.linalg.norm(G,1) <= 1:
+        if np.linalg.norm(G,1) <= 2:
             break
 
         print("第 ",i+1,"次")
@@ -244,19 +222,31 @@ def result(num,k,wa,wb,alpha,depth):
     return (por1 + por2)
 
 if __name__ == "__main__":
-    raw_data = pd.read_csv('/Users/hu/Desktop/NNI/peakstress.csv')
+    raw_data = pd.read_csv('/peakstress.csv')
     n = len(raw_data)
     x = raw_data["depth"]
     y = raw_data["peakstress"]
     z = raw_data["alpha"]
 
+    y_train40 = []
     y_train41 = []
+    y_train42 = []
+    y_train43 = []
 
     for i in range(110):
-        if x[i] == 0.4:      
+        if x[i] == 0.4:
+            if z[i] == 0:
+                y_train40.append(y[i])            
             if z[i] == 0.075:
-                y_train41.append(y[i])       
+                y_train41.append(y[i])
+            if z[i] == 0.15:
+                y_train42.append(y[i])
+            if z[i] == 0.3:
+                y_train43.append(y[i])           
+    y_train40.sort()
     y_train41.sort()
+    y_train42.sort()
+    y_train43.sort()
 
     d = []
     for i in range(10):
@@ -281,16 +271,7 @@ if __name__ == "__main__":
             data_list[i].append(float(finput[5]))
             i = i + 1
 
-    with open("/Users/hu/Desktop/NNI/data/41.csv",mode="w",encoding="utf-8-sig",newline="") as f:
+    with open("/data/41.csv",mode="w",encoding="utf-8-sig",newline="") as f:
         writer = csv.writer(f)
         writer.writerow(header_list)
         writer.writerows(data_list)
-
-    
-
-
-
-
-
-
-    
