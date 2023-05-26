@@ -2,6 +2,8 @@
 This is a Python implementation of the Mixture Weibull model and its related experiments proposed by our paper, titled "Small Data Reliability Analysis: A Mixture Weibull Model and Applications".
 
 ## Concrete.py
+concrete1.py is a function designed to handle the case where the pre-crack length is 0 in the data. In this situation, the denominator of the probability density function becomes 0, which leads to an inability to compute the function.
+
 The code defines two auxiliary functions: `inter` and `smote`, which are used to generate synthetic data.
 
 The function `inter` takes a list `y` and an integer `m` as input. If the length of `y` is 1, it returns `y` as it is. Otherwise, it randomly selects a position `pos` in `y`, generates `m` random numbers, and adds new values to the list `y` based on the selected position and the neighboring values. Finally, it sorts the updated `y` list and returns it along with the original length of `y`.
