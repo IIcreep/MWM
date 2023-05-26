@@ -2,7 +2,7 @@
 This is a Python implementation of the Mixture Weibull model and its related experiments proposed by our paper, titled "Small Data Reliability Analysis: A Mixture Weibull Model and Applications".
 
 ## Concrete.py
-This code defines two auxiliary functions: `inter` and `smote`, which are used to generate synthetic data.
+The code defines two auxiliary functions: `inter` and `smote`, which are used to generate synthetic data.
 
 The function `inter` takes a list `y` and an integer `m` as input. If the length of `y` is 1, it returns `y` as it is. Otherwise, it randomly selects a position `pos` in `y`, generates `m` random numbers, and adds new values to the list `y` based on the selected position and the neighboring values. Finally, it sorts the updated `y` list and returns it along with the original length of `y`.
 
@@ -15,3 +15,7 @@ The functions `partial_function` and `partial_derivative` are used to calculate 
 The function `LL` calculates the log-likelihood function. It takes four parameters `k0`, `k1`, `k2`, a list `y`, and an integer `depth` as input. It initializes variables `V` (set to a constant value), `L` (initialized as 0), and performs a loop over each element in `y`. It calculates two components `com1` and `com2` based on the given formulas, and updates `L` by adding the logarithm of the weighted sum of the components. Finally, it returns the calculated `L`.
 
 The function `NT` implements the Newton's method for optimization. It takes an input matrix
+
+ `input`, a list `y`, and an integer `depth` as input. It initializes variables `k0`, `k1`, and `k2` as initial parameter values. It performs a loop with a maximum iteration limit. In each iteration, it calculates the gradient vector and the Hessian matrix using the `partial_derivative` function. It calculates the parameter update using matrix operations and updates the parameter values. The iteration continues until the maximum number of iterations is reached or the parameter update becomes small enough. Finally, it returns the updated parameter values.
+
+The function `main` is the main parameter estimation process. It takes a list `y` as input. It initializes variables `res` and `reps`. It creates an empty list `alldata` to store the resampled data. It performs circular block bootstrap resampling using the `CCircularBlockBootstrap` function and appends the resampled data to `alldata`. It initializes variables `k0_list`, `k1_list`, and `k2_list` to store the parameter values from each resampled data. It iterates over each resampled data, calls the `NT` function to estimate the parameters, and appends the parameter values to the corresponding lists. Finally, it returns the parameter value lists `k0_list`, `k1_list`, and `k2_list`.
